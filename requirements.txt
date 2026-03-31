@@ -1,0 +1,15 @@
+# Environment Narrator — Pi hub Python dependencies
+#
+# Install:
+#   pip install -r requirements.txt
+#
+# Piper TTS binary is NOT a pip package on all platforms.
+# Install separately:
+#   pip install piper-tts
+#   OR download the binary from https://github.com/rhasspy/piper/releases
+#
+# Mosquitto broker is a system package, not a pip package:
+#   sudo apt install mosquitto mosquitto-clients
+
+google-genai>=1.0.0
+paho-mqtt>=2.0.0
