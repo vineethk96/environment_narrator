@@ -3,7 +3,7 @@
 # Install:
 #   pip install -r requirements.txt
 #
-# Piper TTS binary is NOT a pip package on all platforms.
+# *** Piper TTS binary is NOT a pip package on all platforms. ***
 # Install separately:
 #   pip install piper-tts
 #   OR download the binary from https://github.com/rhasspy/piper/releases
@@ -13,3 +13,5 @@
 
 google-genai>=1.0.0
 paho-mqtt>=2.0.0
+pathvalidate>=3.3.1     # required by piper-tts
+piper-tts>=0.1.0        # install separately, see above

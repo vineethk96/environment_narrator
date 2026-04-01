@@ -39,3 +39,7 @@
 
 # debug information files
 *.dwo
+
+# Ignore virtual environment directory
+venv/
+.venv/
