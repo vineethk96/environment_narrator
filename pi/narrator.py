@@ -21,6 +21,7 @@ Model files:
     pi/models/en_US-lessac-medium.onnx.json
 """
 
+import argparse
 import json
 import os
 import sqlite3
@@ -311,16 +312,25 @@ def speak_async(text: str) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _run_once() -> None:
-    """Run a single narration cycle synchronously (for standalone testing)."""
+def _run_once(hour: int | None = None) -> None:
+    """Run a single narration cycle synchronously (for standalone testing).
+
+    Args:
+        hour: Override the current hour (0-23) for circadian testing.
+              Defaults to the actual system hour when None.
+    """
     init_db()
     now = datetime.now()
-    time_desc = time_description(now.hour)
+    effective_hour = hour if hour is not None else now.hour
+    time_desc = time_description(effective_hour)
     last_narrations = get_last_narrations()
 
-    print(f"[narrator] time={time_desc}  sensors={HARDCODED_SENSORS}", flush=True)
+    if hour is not None:
+        print(f"[narrator] simulated_hour={effective_hour}  time={time_desc}  sensors={HARDCODED_SENSORS}", flush=True)
+    else:
+        print(f"[narrator] time={time_desc}  sensors={HARDCODED_SENSORS}", flush=True)
 
-    text = narrate(HARDCODED_SENSORS, time_desc, now.hour, last_narrations)
+    text = narrate(HARDCODED_SENSORS, time_desc, effective_hour, last_narrations)
     if text is None:
         print("[narrator] Narration skipped (API error or safety block).", flush=True)
         return
@@ -331,4 +341,14 @@ def _run_once() -> None:
 
 
 if __name__ == "__main__":
-    _run_once()
+    parser = argparse.ArgumentParser(description="Run a single environment narration cycle.")
+    parser.add_argument(
+        "--hour",
+        type=int,
+        choices=range(24),
+        metavar="HOUR",
+        help="Simulate a specific hour (0-23) to test circadian personality. "
+             "Defaults to the current system hour.",
+    )
+    args = parser.parse_args()
+    _run_once(hour=args.hour)
