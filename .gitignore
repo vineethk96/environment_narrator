@@ -46,3 +46,8 @@ venv/
 
 # Secrets
 .env
+
+# Runtime data
+pi/memory.db
+pi/memory.db-wal
+pi/memory.db-shm
