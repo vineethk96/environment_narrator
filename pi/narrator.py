@@ -6,11 +6,12 @@ description of the room, synthesizes speech with Piper TTS, and plays it
 via aplay.
 
 Run:
-    export GEMINI_API_KEY=AIza...
+    # Create pi/.env with your API key:
+    #   GEMINI_API_KEY=AIza...
     python pi/narrator.py
 
 Dependencies:
-    pip install google-genai paho-mqtt
+    pip install -r pi/requirements.txt
     # Piper TTS binary: pip install piper-tts  OR  download from
     # https://github.com/rhasspy/piper/releases
 
@@ -26,7 +27,10 @@ import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
+from dotenv import load_dotenv
 from google import genai
+
+load_dotenv()
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -34,6 +38,7 @@ from google import genai
 
 _MODEL_PATH = str(Path(__file__).parent / "models" / "en_US-lessac-medium.onnx")
 _GEMINI_MODEL = "gemini-2.5-flash"  # verify at ai.google.dev/gemini-api/docs/models
+_ALSA_DEVICE = os.environ.get("ALSA_DEVICE", "default")
 
 # ---------------------------------------------------------------------------
 # Hardcoded sensor values (replace with MQTT-sourced values in step 5)
@@ -168,7 +173,7 @@ def speak(text: str, model_path: str = _MODEL_PATH) -> None:
 
     # Use `aplay -l` to find the correct card name for your USB sound card.
     result_play = subprocess.run(
-        ["aplay", "-D", "plughw:CARD=Device,DEV=0", "/tmp/narration.wav"],
+        ["aplay", "-D", _ALSA_DEVICE, "/tmp/narration.wav"],
         capture_output=True,
     )
     if result_play.returncode != 0:

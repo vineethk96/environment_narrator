@@ -43,3 +43,6 @@
 # Ignore virtual environment directory
 venv/
 .venv/
+
+# Secrets
+.env
