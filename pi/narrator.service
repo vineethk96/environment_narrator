@@ -1,0 +1,21 @@
+[Unit]
+Description=Environment Narrator
+# Wait for network and Mosquitto before starting.
+After=network.target mosquitto.service
+
+[Service]
+WorkingDirectory=/home/pi/environment_narrator
+ExecStart=/usr/bin/python3 pi/mqtt_subscriber.py
+Restart=always
+RestartSec=5
+# Secrets file — create once on the Pi:
+#   sudo mkdir -p /etc/narrator
+#   echo "GEMINI_API_KEY=AIza..." | sudo tee /etc/narrator/env
+#   sudo chmod 600 /etc/narrator/env
+EnvironmentFile=/etc/narrator/env
+# Ensure piper (pip-installed under the pi user) is on PATH.
+# Run `which piper` as the pi user to verify the actual path before deploying.
+Environment=PATH=/home/pi/.local/bin:/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=multi-user.target
