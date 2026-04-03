@@ -14,7 +14,7 @@ The system has three layers:
 2. **Raspberry Pi hub** — Subscribes to MQTT topics, batches or processes incoming sensor data, and invokes an LLM API to produce a narrative description.
 3. **LLM integration** — Takes structured sensor readings as context and returns a human-readable interpretation.
 
-The `.gitignore` is configured for C/C++, suggesting the implementation will be compiled C or C++.
+The `.gitignore` is configured for C/C++ and PlatformIO.
 
 ## gstack
 
@@ -41,11 +41,46 @@ Key routing rules:
 - Visual audit, design polish → invoke design-review
 - Architecture review → invoke plan-eng-review
 
+## Repository Structure
+
+```
+mcu/                    ESP32 sensor node firmware (PlatformIO / Arduino framework)
+├── platformio.ini      Board, libraries, build flags
+├── include/
+│   ├── config.h.example  Credential template — commit this
+│   └── config.h          Your credentials — gitignored, never commit
+└── src/
+    └── main.cpp        Firmware: DHT11 + photoresistor → MQTT publish → deep sleep
+
+pi/                     Raspberry Pi narrator (Python)
+├── narrator.py         Main script: MQTT → LLM → TTS → audio
+├── .env.example        Credential template — commit this
+└── .env                Your credentials — gitignored, never commit
+
+docs/
+├── mqtt-schema.md      MQTT topic and payload contract between ESP32 and Pi
+├── plans/              Implementation plans
+└── solutions/          Documented solutions to past problems
+```
+
+## MCU Quickstart (ESP32 sensor node)
+
+1. Install [PlatformIO VSCode extension](https://platformio.org/install/ide?install=vscode).
+2. Copy `mcu/include/config.h.example` → `mcu/include/config.h` and fill in:
+   - `WIFI_SSID` / `WIFI_PASS` — your home WiFi
+   - `MQTT_BROKER_IP` — Raspberry Pi LAN IP (run `hostname -I` on the Pi)
+   - `MQTT_CLIENT_ID` — unique per device (default `"esp32-sensor-01"`)
+3. Open `mcu/` in VSCode → PlatformIO: Build → Upload.
+4. For quick testing, set `SLEEP_INTERVAL_US 10000000ULL` (10 s) in `config.h`.
+
 ## Key Design Decisions (to be preserved as code is added)
 
 - MQTT is the transport protocol between sensors and the Pi hub.
 - The LLM query is triggered on the Pi side, not on the sensor nodes.
 - The project targets a Raspberry Pi as the edge compute device, so resource constraints apply.
+- ESP32 firmware uses deep sleep between readings; the entire lifecycle runs in `setup()`.
+- GPIO 33 (ADC1) is used for the photoresistor — ADC2 pins are blocked by the WiFi driver at silicon level.
+- `docs/mqtt-schema.md` is the authoritative payload contract between the ESP32 and `narrator.py`.
 
 ## Documented Solutions
 
