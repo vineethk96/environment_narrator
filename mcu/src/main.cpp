@@ -117,7 +117,7 @@ static float readLightLux() {
 // Entire firmware lifecycle runs here. loop() is intentionally empty.
 // Each deep-sleep wake is a cold start — all RAM is cleared.
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(9600);
     delay(100); // brief settle for serial buffer
 
     Serial.println("\n[boot] environment_narrator sensor node");
@@ -128,6 +128,7 @@ void setup() {
     analogSetAttenuation(ADC_11db);
 
     // ── Step 1: Initialize DHT11 ─────────────────────────────────────────────
+    pinMode(32, OUTPUT);
     dht.setup(DHTPIN, DHTesp::DHT11);
 
     // ── Step 2: Read DHT11 ───────────────────────────────────────────────────
