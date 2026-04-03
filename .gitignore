@@ -46,3 +46,15 @@ venv/
 
 # Secrets
 .env
+
+# Runtime data
+pi/memory.db
+pi/memory.db-wal
+pi/memory.db-shm
+
+# PlatformIO build artifacts
+.pio/
+mcu/.pio/
+
+# MCU credentials — never commit; copy config.h.example to config.h and fill in values
+mcu/include/config.h

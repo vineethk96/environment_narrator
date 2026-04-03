@@ -1,0 +1,45 @@
+// config.h — local credentials and tuning parameters
+// -------------------------------------------------------
+// NEVER commit this file. Copy config.h.example to config.h and fill in values.
+// config.h is listed in .gitignore; config.h.example is the only committed file.
+//
+// Pattern mirrors pi/.env / pi/.env.example.
+
+#pragma once
+
+// ---------------- WiFi ------------------
+// The SSID and password of your home WiFi network.
+#define WIFI_SSID       "your_wifi_ssid"
+#define WIFI_PASS       "your_wifi_password"
+
+// Time (ms) to wait for WiFi association before giving up and going to sleep.
+// Increase if your router is slow to respond (common for 2.4 GHz congested networks).
+#define WIFI_TIMEOUT_MS 10000
+
+// ---------------- MQTT ------------------
+// Local IP address of the Raspberry Pi running mosquitto.
+// Run `hostname -I` on the Pi to find it (e.g. 192.168.1.42).
+#define MQTT_BROKER_IP  "192.168.1.x"
+
+// mosquitto default port. Change only if you configured a non-standard port.
+#define MQTT_PORT       1883
+
+// Unique client ID per physical device. If you add a second ESP32, give it a
+// different name — the broker will disconnect whichever device connected first
+// when two devices share the same client ID.
+#define MQTT_CLIENT_ID  "esp32-sensor-01"
+
+// ---------------- Timing ----------------
+// Deep-sleep duration in microseconds. Must be uint64_t (ULL suffix required).
+// Any value over ~35 minutes (~2,147,483,648 µs) silently overflows a 32-bit int
+// without the ULL suffix.
+//
+// 5 minutes (production):  300000000ULL
+// 10 seconds (testing):     10000000ULL
+#define SLEEP_INTERVAL_US 300000000ULL
+
+// ---------------- Light sensor ----------
+// Scale factor mapping ADC range (0-4095) to an approximate lux-like range.
+// The Pi's qualitative thresholds span 0-1000+ (dark=<10, glaring=1000+).
+// Adjust empirically after deploying the hardware to real lighting conditions.
+#define LIGHT_LUX_SCALE 1500.0f
